@@ -86,6 +86,7 @@ class CreateQuery{
 		$this->rewrite_set();
 		$this->rewrite_key();
 		$this->add_if_not_exists();
+		$this->rewrite_index();
 
 		return $this->post_process();
 	}
@@ -101,9 +102,28 @@ class CreateQuery{
 		// $pattern = '/^\\s*CREATE\\s*(TEMP|TEMPORARY)?\\s*TABLE\\s*(IF NOT EXISTS)?\\s*([^\(]*)/imsx';
 		$pattern = '/^\\s*CREATE\\s*(?:TEMP|TEMPORARY)?\\s*TABLE\\s*(?:IF\\s*NOT\\s*EXISTS)?\\s*([^\(]*)/imsx';
 		if (preg_match($pattern, $this->_query, $matches)) {
-		$this->table_name = trim($matches[1]);
+			$this->table_name = trim($matches[1]);
+		}
 	}
+
+	/**
+	 * Method for change the INDEX from the SQL statement.
+	 *
+	 * @access private
+	 */
+	private function rewrite_index(){
+		$pattern = '/,([\s]*INDEX.*\(.*?\))/is';
+		if (preg_match($pattern, $this->_query, $matches)) {
+			$this->_query = preg_replace($pattern,'',$this->_query);
+
+			// 今はINDEXは1個だけ対応
+			$index_no = 1;	// 欲しいのは()内なので1
+			$matches[$index_no] = preg_replace('/[\'|\"]/','',$matches[$index_no]);
+			$matches[$index_no] = preg_replace('/\(/',' on '.$this->table_name.'(',$matches[$index_no]);
+			$this->_query.= ";create ".$matches[$index_no];
+		}
 	}
+
 	/**
 	 * Method to change the MySQL field types to SQLite compatible types.
 	 *
@@ -125,7 +145,7 @@ class CreateQuery{
 			'double'     => 'real',    'decimal'    => 'real',
 			'dec'        => 'real',    'numeric'    => 'real',
 			'fixed'      => 'real',    'date'       => 'text',
-			'datetime'   => 'text',    'timestamp'  => 'text',
+			'datetime'   => 'text',    
 			'time'       => 'text',    'year'       => 'text',
 			'char'       => 'text',    'varchar'    => 'text',
 			'binary'     => 'integer', 'varbinary'  => 'blob',
@@ -133,6 +153,7 @@ class CreateQuery{
 			'blob'       => 'blob',    'text'       => 'text',
 			'mediumblob' => 'blob',    'mediumtext' => 'text',
 			'longblob'   => 'blob',    'longtext'   => 'text'
+			// 'timestamp'  => 'text', init_timestampのため消しておく
 		);
 		foreach ($array_types as $o => $r){
 			if (preg_match("/^\\s*(?<!')$o\\s+(.+$)/im", $this->_query, $match)) {
