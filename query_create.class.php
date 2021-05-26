@@ -145,7 +145,9 @@ class CreateQuery{
 			'double'     => 'real',    'decimal'    => 'real',
 			'dec'        => 'real',    'numeric'    => 'real',
 			'fixed'      => 'real',    'date'       => 'text',
-			'datetime'   => 'text',    
+			'datetime'   => 'text',
+			// 例えば"init_timestamp"名のカラムがあったとして、init_'timestamp'とタグで囲われていたので、停止させている
+			// 'timestamp'  => 'text',
 			'time'       => 'text',    'year'       => 'text',
 			'char'       => 'text',    'varchar'    => 'text',
 			'binary'     => 'integer', 'varbinary'  => 'blob',
@@ -153,13 +155,13 @@ class CreateQuery{
 			'blob'       => 'blob',    'text'       => 'text',
 			'mediumblob' => 'blob',    'mediumtext' => 'text',
 			'longblob'   => 'blob',    'longtext'   => 'text'
-			// 'timestamp'  => 'text', init_timestampのため消しておく
 		);
 		foreach ($array_types as $o => $r){
 			if (preg_match("/^\\s*(?<!')$o\\s+(.+$)/im", $this->_query, $match)) {
 				$ptrn = "/$match[1]/im";
 				$replaced = str_ireplace($ptrn, '#placeholder#', $this->_query);
-				$replaced = str_ireplace($o, "'{$o}'", $replaced);
+				// 例えば"init_timestamp"名のカラムが、init_'timestamp'と変換される
+//				$replaced = str_ireplace($o, "'{$o}'", $replaced);
 				$this->_query = str_replace('#placeholder#', $ptrn, $replaced);
 			}
 			$pattern = "/\\b(?<!')$o\\b\\s*(\([^\)]*\)*)?\\s*/ims";
