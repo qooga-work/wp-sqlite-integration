@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: SQLite Integration
-Plugin URI: http://dogwood.skr.jp/wordpress/sqlite-integration/
+Plugin URI: https://wordpress.org/plugins/sqlite-integration
 Description: SQLite Integration is the plugin that enables WordPress to use SQLite. If you don't have MySQL and want to build a WordPress website, it's for you.
 Author: Kojima Toshiyasu
 Version: 1.8.1
