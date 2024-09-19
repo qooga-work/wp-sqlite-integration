@@ -684,4 +684,23 @@ class PDOSQLiteUDFS {
 		return '5.5';
 	}
 }
+
+/**
+ * SQLite用データベースのバージョン更新関数
+ */
+function my_update_db_version() {
+    global $wpdb;
+    global $wp_db_version;
+    
+    $dbversion = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s", 'db_version' ) );
+
+    if ( $dbversion === null || $wp_db_version !== intval( $dbversion ) ) {
+        $wpdb->update(
+            $wpdb->options,
+            array( 'option_value' => intval( $wp_db_version ) ),
+            array( 'option_name' => 'db_version' )
+        );
+    }
+}
+add_action( 'init', 'my_update_db_version' );
 ?>

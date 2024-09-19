@@ -785,10 +785,10 @@ class PDOEngine extends PDO {
 		$param = trim($param);
 
 		//remove the quotes at the end and the beginning
-		if (in_array($param{strlen($param)-1}, array("'",'"'))) {
+		if (in_array($param[strlen($param)-1], array("'",'"'))) {
 			$param = substr($param,0,-1) ;//end
 		}
-		if (in_array($param{0}, array("'",'"'))) {
+		if (in_array($param[0], array("'",'"'))) {
 			$param = substr($param, 1); //start
 		}
 		//$this->extracted_variables[] = $param;
